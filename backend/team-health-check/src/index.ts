@@ -5,6 +5,7 @@ import cookieParser from 'cookie-parser';
 import { createConnection } from 'typeorm';
 import dbConfig from './database';
 import APP_ENVIRONMENT from './util/environment';
+import loginRouter from './routers/login.router';
 
 const PORT = parseInt(APP_ENVIRONMENT.SERVER_PORT, 10);
 
@@ -14,6 +15,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
+app.use('/login', loginRouter);
 
 /**
  * Webpack HMR Activation

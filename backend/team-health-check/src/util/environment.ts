@@ -17,7 +17,8 @@ type EnvironmentVariables =
   | 'POSTGRES_PASSWORD'
   | 'POSTGRES_PORT'
   | 'POSTGRES_HOST'
-  | 'SERVER_PORT';
+  | 'SERVER_PORT'
+  | 'JWT_SECRET';
 
 type OptionalEnvironmentVariables = 'ENVIRONMENT_MODE';
 
@@ -28,6 +29,7 @@ const ENVIRONMENT_VARIABLES = arrayOfAll<EnvironmentVariables>()([
   'POSTGRES_PORT',
   'POSTGRES_HOST',
   'SERVER_PORT',
+  'JWT_SECRET',
 ]);
 
 const OPTIONAL_ENVIRONMENT_VARIABLES = arrayOfAll<OptionalEnvironmentVariables>()([
