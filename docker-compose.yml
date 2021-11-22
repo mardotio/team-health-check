@@ -1,0 +1,40 @@
+version: '2'
+
+services:
+  db:
+    image: postgres
+    environment:
+      - POSTGRES_DB=team_health_check
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PORT=5432
+  backend:
+    build: backend/
+    depends_on:
+      - db
+    volumes:
+      - ./backend/team-health-check/src:/app/src
+      - ./backend/team-health-check/.env:/app/.env
+    environment:
+      - POSTGRES_DB=team_health_check
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_PORT=5432
+      - POSTGRES_HOST=db
+      - SERVER_PORT=8000
+  frontend:
+    build: frontend/
+    depends_on:
+      - backend
+    volumes:
+      - ./frontend/team-health-check/src:/app/src
+      - ./frontend/team-health-check/public:/app/public
+  proxy:
+    image: nginx
+    depends_on:
+      - backend
+      - frontend
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    ports:
+      - "3000:3000"
