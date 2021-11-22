@@ -1,14 +1,12 @@
 import express from 'express';
-import * as dotenv from 'dotenv';
 import helmet from 'helmet';
 import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import { createConnection } from 'typeorm';
 import dbConfig from './database';
+import APP_ENVIRONMENT from './util/environment';
 
-dotenv.config();
-
-const PORT = parseInt(process.env.SERVER_PORT || '', 10);
+const PORT = parseInt(APP_ENVIRONMENT.SERVER_PORT, 10);
 
 const app = express();
 
