@@ -9,6 +9,7 @@ import loginRouter from './routers/login.router';
 import surveysRouter from './routers/surveys.router';
 import withJwtAuth from './middleware/auth.middleware';
 import teamsRouter from './routers/teams.router';
+import responsesRouter from './routers/responses.router';
 
 const PORT = parseInt(APP_ENVIRONMENT.SERVER_PORT, 10);
 
@@ -19,8 +20,9 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use('/login', loginRouter);
-app.use('/surveys', withJwtAuth, surveysRouter);
 app.use('/teams', withJwtAuth, teamsRouter);
+app.use('/surveys', withJwtAuth, surveysRouter);
+app.use('/responses', withJwtAuth, responsesRouter);
 
 /**
  * Webpack HMR Activation
