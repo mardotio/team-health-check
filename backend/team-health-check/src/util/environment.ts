@@ -18,7 +18,8 @@ type EnvironmentVariables =
   | 'POSTGRES_PORT'
   | 'POSTGRES_HOST'
   | 'SERVER_PORT'
-  | 'JWT_SECRET';
+  | 'JWT_SECRET'
+  | 'QUESTIONS_URL';
 
 type OptionalEnvironmentVariables = 'ENVIRONMENT_MODE';
 
@@ -30,11 +31,11 @@ const ENVIRONMENT_VARIABLES = arrayOfAll<EnvironmentVariables>()([
   'POSTGRES_HOST',
   'SERVER_PORT',
   'JWT_SECRET',
+  'QUESTIONS_URL',
 ]);
 
-const OPTIONAL_ENVIRONMENT_VARIABLES = arrayOfAll<OptionalEnvironmentVariables>()([
-  'ENVIRONMENT_MODE',
-]);
+const OPTIONAL_ENVIRONMENT_VARIABLES =
+  arrayOfAll<OptionalEnvironmentVariables>()(['ENVIRONMENT_MODE']);
 
 export const generateEnvironment = <
   RequiredEnv extends string,

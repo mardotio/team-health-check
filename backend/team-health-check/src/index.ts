@@ -6,6 +6,8 @@ import { createConnection } from 'typeorm';
 import dbConfig from './database';
 import APP_ENVIRONMENT from './util/environment';
 import loginRouter from './routers/login.router';
+import surveysRouter from './routers/surveys.router';
+import withJwtAuth from './middleware/auth.middleware';
 
 const PORT = parseInt(APP_ENVIRONMENT.SERVER_PORT, 10);
 
@@ -16,6 +18,7 @@ app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
 app.use('/login', loginRouter);
+app.use('/surveys', withJwtAuth, surveysRouter);
 
 /**
  * Webpack HMR Activation
