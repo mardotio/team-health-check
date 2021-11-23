@@ -166,3 +166,56 @@ export const getSurvey: RequestHandler<GetSurveyParams> = async (req, res) => {
     active: targetSurvey.active,
   });
 };
+
+interface GetTeamSurveysParams {
+  teamId: string;
+}
+
+interface SurveySummary {
+  id: string;
+  createdOn: number;
+  active: boolean;
+}
+
+interface TeamSurveysResponse {
+  surveys: SurveySummary[];
+}
+
+export const validateGetTeamSurveys = () => [param('teamId').isUUID(4)];
+
+export const getTeamSurveys: RequestHandler<GetTeamSurveysParams> = async (
+  req,
+  res,
+) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return sendJson(res, 400, { errors: errors.array() });
+  }
+
+  const { teamId } = req.params;
+  const teamRepo = getRepository(Team);
+
+  const targetTeam = await teamRepo.findOne(teamId);
+
+  if (!targetTeam) {
+    return sendJson(res, 404, {
+      errors: [`Could not find team by ID "${teamId}".`],
+    });
+  }
+
+  const surveyRepo = getRepository(Survey);
+
+  const surveys = await surveyRepo.find({
+    where: { team: targetTeam },
+    order: { createdOn: 'DESC' },
+  });
+
+  return sendJson<TeamSurveysResponse>(res, 200, {
+    surveys: surveys.map((s) => ({
+      id: s.id,
+      createdOn: s.createdOn.getTime(),
+      active: s.active,
+    })),
+  });
+};
