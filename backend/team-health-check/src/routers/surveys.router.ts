@@ -1,5 +1,8 @@
 import express from 'express';
-import { createSurvey, validateCreateSurvey } from '../services/surveys.service';
+import {
+  createSurvey,
+  validateCreateSurvey,
+} from '../services/surveys.service';
 
 const surveysRouter = express.Router();
 
