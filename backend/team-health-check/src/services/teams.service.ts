@@ -51,3 +51,22 @@ export const createTeam: RequestHandler<{}, {}, CreateTeamRequest> = async (
     displayName: createdTeam.displayName,
   });
 };
+
+interface TeamResponse {
+  id: string;
+  displayName: string;
+}
+
+interface TeamsResponse {
+  teams: TeamResponse[];
+}
+
+export const getTeams: RequestHandler = async (_req, res) => {
+  const teamRepo = getRepository(Team);
+
+  const teams = await teamRepo.find();
+
+  return sendJson<TeamsResponse>(res, 200, {
+    teams: teams.map((t) => ({ id: t.id, displayName: t.displayName })),
+  });
+};
