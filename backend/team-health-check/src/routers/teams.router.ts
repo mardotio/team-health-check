@@ -1,8 +1,13 @@
 import express from 'express';
-import { createTeam, validateCreateTeam } from '../services/teams.service';
+import {
+  createTeam,
+  getTeams,
+  validateCreateTeam,
+} from '../services/teams.service';
 
 const teamsRouter = express.Router();
 
+teamsRouter.get('/', getTeams);
 teamsRouter.post('/', ...validateCreateTeam(), createTeam);
 
 export default teamsRouter;
