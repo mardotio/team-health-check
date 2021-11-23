@@ -2,7 +2,7 @@ import { RequestHandler } from 'express';
 import fetch from 'node-fetch';
 import { getRepository } from 'typeorm';
 import { v4 as uuidV4 } from 'uuid';
-import { body, validationResult } from 'express-validator';
+import { body, param, validationResult } from 'express-validator';
 import Survey from '../entities/Survey';
 import SurveyQuestion from '../entities/SurveyQuestion';
 import sendJson from '../util/sendJson';
@@ -23,6 +23,16 @@ const fetchQuestions = async () => {
   return null;
 };
 
+interface Question {
+  id: string;
+  question: string;
+}
+
+interface SurveyTeam {
+  id: string;
+  displayName: string;
+}
+
 interface CreateSurveyRequest {
   teamId: string;
 }
@@ -31,14 +41,8 @@ interface CreateSurveyResponse {
   id: string;
   createdOn: number;
   active: boolean;
-  questions: {
-    id: string;
-    question: string;
-  }[];
-  team: {
-    id: string;
-    displayName: string;
-  };
+  questions: Question[];
+  team: SurveyTeam;
 }
 
 export const validateCreateSurvey = () => [body('teamId').isUUID(4)];
@@ -112,5 +116,53 @@ export const createSurvey: RequestHandler<{}, {}, CreateSurveyRequest> = async (
       id: targetTeam.id,
       displayName: targetTeam.displayName,
     },
+  });
+};
+
+interface GetSurveyParams {
+  surveyId: string;
+}
+
+interface SurveyResponse {
+  id: string;
+  createdOn: number;
+  questions: Question[];
+  team: SurveyTeam;
+  active: boolean;
+}
+
+export const validateGetSurvey = () => [param('surveyId').isUUID()];
+
+export const getSurvey: RequestHandler<GetSurveyParams> = async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return sendJson(res, 400, { errors: errors.array() });
+  }
+
+  const { surveyId } = req.params;
+  const surveyRepo = getRepository(Survey);
+
+  const targetSurvey = await surveyRepo.findOne({
+    where: { id: surveyId },
+    relations: ['questions', 'team'],
+  });
+
+  if (!targetSurvey) {
+    return sendJson(res, 404, `Could not find survey by ID "${surveyId}".`);
+  }
+
+  return sendJson<SurveyResponse>(res, 200, {
+    id: targetSurvey.id,
+    createdOn: targetSurvey.createdOn.getTime(),
+    questions: targetSurvey.questions.map((q) => ({
+      id: q.id,
+      question: q.question,
+    })),
+    team: {
+      id: targetSurvey.team.id,
+      displayName: targetSurvey.team.displayName,
+    },
+    active: targetSurvey.active,
   });
 };

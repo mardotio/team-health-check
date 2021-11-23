@@ -20,7 +20,7 @@ export default class Survey {
   @CreateDateColumn()
   createdOn!: Date;
 
-  @OneToMany(() => SurveyQuestion, (surveyQuestion) => surveyQuestion.question)
+  @OneToMany(() => SurveyQuestion, (surveyQuestion) => surveyQuestion.survey)
   questions!: SurveyQuestion[];
 
   @Column()
