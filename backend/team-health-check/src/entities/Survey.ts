@@ -2,10 +2,12 @@ import {
   Column,
   CreateDateColumn,
   Entity,
+  ManyToOne,
   OneToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
 import SurveyQuestion from './SurveyQuestion';
+import Team from './Team';
 
 @Entity()
 export default class Survey {
@@ -23,4 +25,7 @@ export default class Survey {
 
   @Column()
   active!: boolean;
+
+  @ManyToOne(() => Team)
+  team!: Team;
 }

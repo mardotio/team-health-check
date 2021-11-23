@@ -1,8 +1,8 @@
 import express from 'express';
-import { createSurvey } from '../services/surveys.service';
+import { createSurvey, validateCreateSurvey } from '../services/surveys.service';
 
 const surveysRouter = express.Router();
 
-surveysRouter.post('/', createSurvey);
+surveysRouter.post('/', ...validateCreateSurvey(), createSurvey);
 
 export default surveysRouter;

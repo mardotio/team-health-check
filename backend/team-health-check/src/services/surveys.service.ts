@@ -1,11 +1,13 @@
-import { Request, Response } from 'express';
+import { RequestHandler } from 'express';
 import fetch from 'node-fetch';
 import { getRepository } from 'typeorm';
 import { v4 as uuidV4 } from 'uuid';
+import { body, validationResult } from 'express-validator';
 import Survey from '../entities/Survey';
 import SurveyQuestion from '../entities/SurveyQuestion';
 import sendJson from '../util/sendJson';
 import APP_ENVIRONMENT from '../util/environment';
+import Team from '../entities/Team';
 
 interface SurveyQuestionsResponse {
   questions: string[];
@@ -21,6 +23,10 @@ const fetchQuestions = async () => {
   return null;
 };
 
+interface CreateSurveyRequest {
+  teamId: string;
+}
+
 interface CreateSurveyResponse {
   id: string;
   createdOn: number;
@@ -29,10 +35,35 @@ interface CreateSurveyResponse {
     id: string;
     question: string;
   }[];
+  team: {
+    id: string;
+    displayName: string;
+  };
 }
 
-// eslint-disable-next-line import/prefer-default-export
-export const createSurvey = async (req: Request, res: Response) => {
+export const validateCreateSurvey = () => [body('teamId').isUUID(4)];
+
+export const createSurvey: RequestHandler<{}, {}, CreateSurveyRequest> = async (
+  req,
+  res,
+) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return sendJson(res, 400, { errors: errors.array() });
+  }
+
+  const { teamId } = req.body;
+  const teamRepo = getRepository(Team);
+
+  const targetTeam = await teamRepo.findOne(teamId);
+
+  if (!targetTeam) {
+    return sendJson(res, 400, {
+      errors: [`Could not find team with ID "${teamId}".`],
+    });
+  }
+
   const questions = await fetchQuestions();
 
   if (questions === null) {
@@ -47,6 +78,7 @@ export const createSurvey = async (req: Request, res: Response) => {
     id: uuidV4(),
     createdBy: req.jwtPayload.id,
     active: true,
+    team: targetTeam,
   });
 
   const questionsAsyncSave = questions.questions.map((q) =>
@@ -76,5 +108,9 @@ export const createSurvey = async (req: Request, res: Response) => {
     createdOn: createdSurvey.createdOn.getTime(),
     active: createdSurvey.active,
     questions: savedQuestions.map(({ id, question }) => ({ id, question })),
+    team: {
+      id: targetTeam.id,
+      displayName: targetTeam.displayName,
+    },
   });
 };
