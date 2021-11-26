@@ -4,6 +4,7 @@ import Survey from './entities/Survey';
 import SurveyQuestion from './entities/SurveyQuestion';
 import Team from './entities/Team';
 import QuestionResponse from './entities/QuestionResponse';
+import SurveyResponse from './entities/SurveyResponse';
 
 const dbConfig = (): ConnectionOptions => ({
   type: 'postgres',
@@ -12,7 +13,7 @@ const dbConfig = (): ConnectionOptions => ({
   username: APP_ENVIRONMENT.POSTGRES_USER,
   password: APP_ENVIRONMENT.POSTGRES_PASSWORD,
   database: APP_ENVIRONMENT.POSTGRES_DB,
-  entities: [Survey, SurveyQuestion, Team, QuestionResponse],
+  entities: [Survey, SurveyQuestion, Team, QuestionResponse, SurveyResponse],
   synchronize: true,
 });
 

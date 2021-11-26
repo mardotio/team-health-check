@@ -5,6 +5,8 @@ import arrayOfAll from '../util/arrayOfAll';
 import sendJson from '../util/sendJson';
 import QuestionResponse from '../entities/QuestionResponse';
 import SurveyQuestion from '../entities/SurveyQuestion';
+import SurveyResponse from '../entities/SurveyResponse';
+import Survey from '../entities/Survey';
 
 type ResponseValues = 'thumbsUp' | 'thumbsDown' | 'shrug';
 
@@ -23,6 +25,31 @@ export const validateSetResponse = () => [
   ),
 ];
 
+const getAndCreateResponse = async (userId: string, survey: Survey) => {
+  if (!survey.active) {
+    return null;
+  }
+
+  const responseRepo = getRepository(SurveyResponse);
+
+  const existingResponse = await responseRepo.findOne({ survey, userId });
+
+  if (existingResponse) {
+    return existingResponse;
+  }
+
+  const questionRepo = getRepository(SurveyQuestion);
+  const questionCount = await questionRepo.count({ survey });
+
+  return responseRepo.save({
+    ...new SurveyResponse(),
+    survey,
+    userId,
+    answered: 0,
+    questions: questionCount,
+  });
+};
+
 export const setResponse: RequestHandler<
   SetResponseParams,
   {},
@@ -37,7 +64,10 @@ export const setResponse: RequestHandler<
   const { questionId } = req.params;
   const questionRepo = getRepository(SurveyQuestion);
 
-  const targetQuestion = await questionRepo.findOne(questionId);
+  const targetQuestion = await questionRepo.findOne({
+    where: { id: questionId },
+    relations: ['survey'],
+  });
 
   if (!targetQuestion) {
     return sendJson(res, 404, {
@@ -45,16 +75,30 @@ export const setResponse: RequestHandler<
     });
   }
 
-  const { response } = req.body;
   const { id: userId } = req.jwtPayload;
+  const surveyResponse = await getAndCreateResponse(
+    userId,
+    targetQuestion.survey,
+  );
+
+  if (surveyResponse === null) {
+    return sendJson(res, 400, { errors: ['The survey is no longer active.'] });
+  }
+
+  const { response } = req.body;
   const responseRepo = getRepository(QuestionResponse);
+  const surveyResponseRepo = getRepository(SurveyResponse);
 
   await responseRepo.save({
     ...new QuestionResponse(),
-    userId,
+    surveyResponse,
     response,
     question: targetQuestion,
   });
+
+  const answerCount = await responseRepo.count({ surveyResponse });
+
+  await surveyResponseRepo.update(surveyResponse.id, { answered: answerCount });
 
   return res.status(200).send();
 };

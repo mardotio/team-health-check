@@ -1,5 +1,6 @@
 import { Column, Entity, JoinColumn, ManyToOne, PrimaryColumn } from 'typeorm';
 import SurveyQuestion from './SurveyQuestion';
+import SurveyResponse from './SurveyResponse';
 
 @Entity()
 export default class QuestionResponse {
@@ -7,12 +8,16 @@ export default class QuestionResponse {
   response!: string;
 
   @PrimaryColumn({ type: 'uuid' })
-  userId!: string;
+  questionId!: string;
 
   @PrimaryColumn({ type: 'uuid' })
-  questionId!: string;
+  surveyResponseId!: string;
 
   @ManyToOne(() => SurveyQuestion)
   @JoinColumn({ name: 'questionId' })
   question!: SurveyQuestion;
+
+  @ManyToOne(() => SurveyResponse)
+  @JoinColumn({ name: 'surveyResponseId' })
+  surveyResponse!: SurveyResponse;
 }
