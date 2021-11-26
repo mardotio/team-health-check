@@ -125,3 +125,69 @@ export const setResponse: RequestHandler<
 
   return res.status(200).send();
 };
+
+interface GetResponseParams {
+  surveyId: string;
+}
+
+interface SurveyResponseItem {
+  id: string;
+  question: string;
+  response: ResponseValues | null;
+}
+
+interface GetSurveyResponseResponse {
+  responses: SurveyResponseItem[];
+}
+
+export const validateGetResponse = () => [param('surveyId').isUUID(4)];
+
+export const getSurveyResponse: RequestHandler<GetResponseParams> = async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return sendJson(res, 400, { errors: errors.array() });
+  }
+
+  const { surveyId } = req.params;
+  const surveyRepo = getRepository(Survey);
+
+  const survey = await surveyRepo.findOne(surveyId);
+
+  if (!survey) {
+    return sendJson(res, 404, {
+      errors: [`Could not find survey by ID "${surveyId}".`],
+    });
+  }
+
+  const { id: userId } = req.jwtPayload;
+  const surveyResponse = await getAndCreateResponse(userId, survey);
+
+  if (!surveyResponse) {
+    return sendJson(res, 400, { errors: ['This survey is no longer active.'] });
+  }
+
+  const questionResponseRepo = getRepository(QuestionResponse);
+  const questionRepo = getRepository(SurveyQuestion);
+  const questions = await questionRepo.find({ survey });
+  const responses = (
+    await questionResponseRepo.find({
+      where: { surveyResponse },
+      relations: ['question'],
+    })
+  ).reduce(
+    (mapped, resp) => ({
+      ...mapped,
+      [resp.question.id]: resp.response as ResponseValues,
+    }),
+    {} as Record<string, ResponseValues>,
+  );
+
+  return sendJson<GetSurveyResponseResponse>(res, 200, {
+    responses: questions.map((q) => ({
+      id: q.id,
+      question: q.question,
+      response: responses[q.id] || null,
+    })),
+  });
+};
