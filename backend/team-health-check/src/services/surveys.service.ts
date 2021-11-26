@@ -8,6 +8,7 @@ import SurveyQuestion from '../entities/SurveyQuestion';
 import sendJson from '../util/sendJson';
 import APP_ENVIRONMENT from '../util/environment';
 import Team from '../entities/Team';
+import { ResponseValues } from './responses.service';
 
 interface SurveyQuestionsResponse {
   questions: string[];
@@ -228,3 +229,48 @@ export const getTeamSurveys: RequestHandler<GetTeamSurveysParams> = async (
     })),
   });
 };
+
+interface GetSurveyResponsesParams {
+  surveyId: string;
+}
+
+interface QuestionResponseItem {
+  id: string;
+  question: string;
+  responses: ResponseValues[];
+}
+
+interface SurveyResponsesResponse {
+  responses: QuestionResponseItem[];
+}
+
+export const validateGetSurveyResponses = () => [param('surveyId').isUUID(4)];
+
+export const getSurveyResponses: RequestHandler<GetSurveyResponsesParams> =
+  async (req, res) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return sendJson(res, 400, { errors: errors.array() });
+    }
+
+    const { surveyId } = req.params;
+    const surveyRepo = getRepository(Survey);
+
+    const targetSurvey = await surveyRepo.findOne({
+      where: { id: surveyId },
+      relations: ['questions', 'questions.responses'],
+    });
+
+    if (!targetSurvey) {
+      return sendJson(res, 404, `Could not find survey by ID "${surveyId}".`);
+    }
+
+    return sendJson<SurveyResponsesResponse>(res, 200, {
+      responses: targetSurvey.questions.map((q) => ({
+        id: q.id,
+        question: q.question,
+        responses: q.responses.map((r) => r.response as ResponseValues),
+      })),
+    });
+  };

@@ -8,7 +8,7 @@ import SurveyQuestion from '../entities/SurveyQuestion';
 import SurveyResponse from '../entities/SurveyResponse';
 import Survey from '../entities/Survey';
 
-type ResponseValues = 'thumbsUp' | 'thumbsDown' | 'shrug';
+export type ResponseValues = 'thumbsUp' | 'thumbsDown' | 'shrug';
 
 interface SetResponseRequest {
   response: ResponseValues;
