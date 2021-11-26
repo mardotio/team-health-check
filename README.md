@@ -9,7 +9,7 @@ environment variables that are not already declared in
 to include the following:
 
 ```dotenv
-JWT_SECRET:"whatever secret you want"
+JWT_SECRET="whatever secret you want"
 QUESTIONS_URL="URL to JSON file containing survey questions"
 ```
 
