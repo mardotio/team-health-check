@@ -34,8 +34,27 @@ const getAndCreateResponse = async (userId: string, survey: Survey) => {
 
   const existingResponse = await responseRepo.findOne({ survey, userId });
 
+  if (!survey.maxResponses && existingResponse) {
+    return existingResponse;
+  }
+
+  const surveyResponses = await responseRepo.find({ survey });
+  const completedCount = surveyResponses.filter(
+    (r) => r.questions === r.answered,
+  ).length;
+
+  if (survey.maxResponses && completedCount >= survey.maxResponses) {
+    const surveyRepo = getRepository(Survey);
+    await surveyRepo.update(survey.id, { active: false });
+    return null;
+  }
+
   if (existingResponse) {
     return existingResponse;
+  }
+
+  if (survey.maxResponses && surveyResponses.length >= survey.maxResponses) {
+    return null;
   }
 
   const questionRepo = getRepository(SurveyQuestion);
@@ -82,7 +101,11 @@ export const setResponse: RequestHandler<
   );
 
   if (surveyResponse === null) {
-    return sendJson(res, 400, { errors: ['The survey is no longer active.'] });
+    return sendJson(res, 400, {
+      errors: [
+        'This survey is not accepting responses or is no longer active.',
+      ],
+    });
   }
 
   const { response } = req.body;

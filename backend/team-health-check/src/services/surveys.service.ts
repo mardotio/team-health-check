@@ -35,6 +35,7 @@ interface SurveyTeam {
 
 interface CreateSurveyRequest {
   teamId: string;
+  maxResponses?: number | null;
 }
 
 interface CreateSurveyResponse {
@@ -43,9 +44,13 @@ interface CreateSurveyResponse {
   active: boolean;
   questions: Question[];
   team: SurveyTeam;
+  maxResponses: number | null;
 }
 
-export const validateCreateSurvey = () => [body('teamId').isUUID(4)];
+export const validateCreateSurvey = () => [
+  body('teamId').isUUID(4),
+  body('maxResponses').optional({ nullable: true }).isInt({ min: 1 }),
+];
 
 export const createSurvey: RequestHandler<{}, {}, CreateSurveyRequest> = async (
   req,
@@ -57,7 +62,7 @@ export const createSurvey: RequestHandler<{}, {}, CreateSurveyRequest> = async (
     return sendJson(res, 400, { errors: errors.array() });
   }
 
-  const { teamId } = req.body;
+  const { teamId, maxResponses } = req.body;
   const teamRepo = getRepository(Team);
 
   const targetTeam = await teamRepo.findOne(teamId);
@@ -83,6 +88,7 @@ export const createSurvey: RequestHandler<{}, {}, CreateSurveyRequest> = async (
     createdBy: req.jwtPayload.id,
     active: true,
     team: targetTeam,
+    maxResponses: maxResponses || null,
   });
 
   const questionsAsyncSave = questions.questions.map((q) =>
@@ -116,6 +122,7 @@ export const createSurvey: RequestHandler<{}, {}, CreateSurveyRequest> = async (
       id: targetTeam.id,
       displayName: targetTeam.displayName,
     },
+    maxResponses: createdSurvey.maxResponses || null,
   });
 };
 
@@ -129,6 +136,7 @@ interface SurveyResponse {
   questions: Question[];
   team: SurveyTeam;
   active: boolean;
+  maxResponses: number | null;
 }
 
 export const validateGetSurvey = () => [param('surveyId').isUUID()];
@@ -164,6 +172,7 @@ export const getSurvey: RequestHandler<GetSurveyParams> = async (req, res) => {
       displayName: targetSurvey.team.displayName,
     },
     active: targetSurvey.active,
+    maxResponses: targetSurvey.maxResponses || null,
   });
 };
 
