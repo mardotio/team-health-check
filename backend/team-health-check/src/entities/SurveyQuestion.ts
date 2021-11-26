@@ -1,5 +1,12 @@
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn } from 'typeorm';
+import {
+  Column,
+  Entity,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
+} from 'typeorm';
 import Survey from './Survey';
+import QuestionResponse from './QuestionResponse';
 
 @Entity()
 export default class SurveyQuestion {
@@ -11,4 +18,10 @@ export default class SurveyQuestion {
 
   @Column()
   question!: string;
+
+  @OneToMany(
+    () => QuestionResponse,
+    (questionResponse) => questionResponse.question,
+  )
+  responses!: QuestionResponse[];
 }

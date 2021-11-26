@@ -28,4 +28,7 @@ export default class Survey {
 
   @ManyToOne(() => Team)
   team!: Team;
+
+  @Column({ nullable: true, type: 'integer' })
+  maxResponses!: number | null;
 }
