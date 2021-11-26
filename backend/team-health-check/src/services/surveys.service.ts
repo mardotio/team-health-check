@@ -325,7 +325,7 @@ export const editSurvey: RequestHandler<
   }
 
   if (survey.createdBy !== req.jwtPayload.id) {
-    return sendJson(res, 400, {
+    return sendJson(res, 403, {
       errors: ['You do not have permission to edit this survey.'],
     });
   }
@@ -338,7 +338,7 @@ export const editSurvey: RequestHandler<
     const responsesCount = await responseRepo.count({ survey });
 
     if (responsesCount > maxResponses) {
-      return sendJson(res, 400, {
+      return sendJson(res, 409, {
         error: [
           `Cannot set "maxResponses" to a number less than the current number of responses (${responsesCount})`,
         ],
