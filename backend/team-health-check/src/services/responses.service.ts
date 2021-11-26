@@ -142,7 +142,10 @@ interface GetSurveyResponseResponse {
 
 export const validateGetResponse = () => [param('surveyId').isUUID(4)];
 
-export const getSurveyResponse: RequestHandler<GetResponseParams> = async (req, res) => {
+export const getSurveyResponse: RequestHandler<GetResponseParams> = async (
+  req,
+  res,
+) => {
   const errors = validationResult(req);
 
   if (!errors.isEmpty()) {
