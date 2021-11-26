@@ -92,11 +92,12 @@ export const createSurvey: RequestHandler<{}, {}, CreateSurveyRequest> = async (
     maxResponses: maxResponses || null,
   });
 
-  const questionsAsyncSave = questions.questions.map((q) =>
+  const questionsAsyncSave = questions.questions.map((q, i) =>
     surveyQuestionRepo.save({
       ...new SurveyQuestion(),
       survey: createdSurvey,
       question: q,
+      order: i + 1,
     }),
   );
 
@@ -164,10 +165,12 @@ export const getSurvey: RequestHandler<GetSurveyParams> = async (req, res) => {
   return sendJson<SurveyResponse>(res, 200, {
     id: targetSurvey.id,
     createdOn: targetSurvey.createdOn.getTime(),
-    questions: targetSurvey.questions.map((q) => ({
-      id: q.id,
-      question: q.question,
-    })),
+    questions: targetSurvey.questions
+      .sort((q1, q2) => q1.order - q2.order)
+      .map((q) => ({
+        id: q.id,
+        question: q.question,
+      })),
     team: {
       id: targetSurvey.team.id,
       displayName: targetSurvey.team.displayName,
@@ -257,17 +260,21 @@ export const getSurveyResponses: RequestHandler<GetSurveyResponsesParams> =
     const { surveyId } = req.params;
     const surveyRepo = getRepository(Survey);
 
-    const targetSurvey = await surveyRepo.findOne({
-      where: { id: surveyId },
-      relations: ['questions', 'questions.responses'],
-    });
+    const targetSurvey = await surveyRepo.findOne(surveyId);
 
     if (!targetSurvey) {
       return sendJson(res, 404, `Could not find survey by ID "${surveyId}".`);
     }
 
+    const questionsRepo = getRepository(SurveyQuestion);
+    const surveyQuestions = await questionsRepo.find({
+      where: { survey: targetSurvey },
+      relations: ['responses'],
+      order: { order: 'ASC' },
+    });
+
     return sendJson<SurveyResponsesResponse>(res, 200, {
-      responses: targetSurvey.questions.map((q) => ({
+      responses: surveyQuestions.map((q) => ({
         id: q.id,
         question: q.question,
         responses: q.responses.map((r) => r.response as ResponseValues),
