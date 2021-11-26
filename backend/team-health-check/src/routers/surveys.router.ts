@@ -1,10 +1,12 @@
 import express from 'express';
 import {
   createSurvey,
+  editSurvey,
   getSurvey,
   getSurveyResponses,
   getTeamSurveys,
   validateCreateSurvey,
+  validateEditSurvey,
   validateGetSurvey,
   validateGetSurveyResponses,
   validateGetTeamSurveys,
@@ -20,5 +22,6 @@ surveysRouter.get(
   ...validateGetSurveyResponses(),
   getSurveyResponses,
 );
+surveysRouter.patch('/:surveyId', ...validateEditSurvey(), editSurvey);
 
 export default surveysRouter;

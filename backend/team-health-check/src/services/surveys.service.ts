@@ -9,6 +9,7 @@ import sendJson from '../util/sendJson';
 import APP_ENVIRONMENT from '../util/environment';
 import Team from '../entities/Team';
 import { ResponseValues } from './responses.service';
+import SurveyResponse from '../entities/SurveyResponse';
 
 interface SurveyQuestionsResponse {
   questions: string[];
@@ -132,7 +133,7 @@ interface GetSurveyParams {
   surveyId: string;
 }
 
-interface SurveyResponse {
+interface SurveyDetailsResponse {
   id: string;
   createdOn: number;
   questions: Question[];
@@ -162,7 +163,7 @@ export const getSurvey: RequestHandler<GetSurveyParams> = async (req, res) => {
     return sendJson(res, 404, `Could not find survey by ID "${surveyId}".`);
   }
 
-  return sendJson<SurveyResponse>(res, 200, {
+  return sendJson<SurveyDetailsResponse>(res, 200, {
     id: targetSurvey.id,
     createdOn: targetSurvey.createdOn.getTime(),
     questions: targetSurvey.questions
@@ -281,3 +282,75 @@ export const getSurveyResponses: RequestHandler<GetSurveyResponsesParams> =
       })),
     });
   };
+
+interface EditSurveyParams {
+  surveyId: string;
+}
+
+interface EditSurveyRequest {
+  active?: boolean;
+  maxResponses?: number | null;
+}
+
+export const validateEditSurvey = () => [
+  param('surveyId').isUUID(4),
+  body('active').optional().isBoolean({ strict: true }).toBoolean(true),
+  body('maxResponses').optional({ nullable: true }).isInt({ min: 1 }),
+];
+
+export const editSurvey: RequestHandler<
+  EditSurveyParams,
+  {},
+  EditSurveyRequest
+> = async (req, res) => {
+  const errors = validationResult(req);
+
+  if (!errors.isEmpty()) {
+    return sendJson(res, 400, { errors: errors.array() });
+  }
+
+  const surveyRepo = getRepository(Survey);
+  const { surveyId } = req.params;
+
+  const survey = await surveyRepo.findOne(surveyId);
+
+  if (!survey) {
+    return sendJson(res, 404, {
+      errors: [`Could not find survey by ID "${surveyId}"`],
+    });
+  }
+
+  if (!survey.active) {
+    return sendJson(res, 400, { errors: ['This survey is no longer active.'] });
+  }
+
+  if (survey.createdBy !== req.jwtPayload.id) {
+    return sendJson(res, 400, {
+      errors: ['You do not have permission to edit this survey.'],
+    });
+  }
+
+  const { active = survey.active, maxResponses } = req.body;
+
+  const responseRepo = getRepository(SurveyResponse);
+
+  if (maxResponses) {
+    const responsesCount = await responseRepo.count({ survey });
+
+    if (responsesCount > maxResponses) {
+      return sendJson(res, 400, {
+        error: [
+          `Cannot set "maxResponses" to a number less than the current number of responses (${responsesCount})`,
+        ],
+      });
+    }
+  }
+
+  await surveyRepo.update(survey.id, {
+    active,
+    maxResponses:
+      maxResponses === null ? null : maxResponses || survey.maxResponses,
+  });
+
+  return res.status(204).send();
+};
