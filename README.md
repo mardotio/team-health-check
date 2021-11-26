@@ -31,6 +31,9 @@ with `docker-compose up --build`.
 
 The API should be accessible at `http://localhost:3000/api`.
 
+You can use the latest
+[Postman collection](./postman/team-health-check-api.json) to make API requests.
+
 ## Developing
 
 Before starting, you will need to run `npm i` for the backend and frontend

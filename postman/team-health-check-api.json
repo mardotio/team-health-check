@@ -1,0 +1,286 @@
+{
+	"info": {
+		"_postman_id": "7344be49-556e-4e53-8807-0e8c5d427c5a",
+		"name": "team-health-check",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Login",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"url": {
+					"raw": "{{apiEndpoint}}/login",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"login"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create team",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"displayName\": \"CD4PE\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiEndpoint}}/teams",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get teams",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{apiEndpoint}}/teams",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"teams"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create survey",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"teamId\": \"17a44416-ffeb-42ef-b983-a8aa852f2887\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiEndpoint}}/surveys",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"surveys"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get survey",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{apiEndpoint}}/surveys/:surveyId",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"surveys",
+						":surveyId"
+					],
+					"variable": [
+						{
+							"key": "surveyId",
+							"value": "9f948047-79f4-4d56-8c79-52f8d48074f0"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get team surveys",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{apiEndpoint}}/surveys/team/:teamId",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"surveys",
+						"team",
+						":teamId"
+					],
+					"variable": [
+						{
+							"key": "teamId",
+							"value": "ba3943cd-c3bf-4e9c-b7d2-b6e2b0c38670"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Edit survey",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"active\": true,\n    \"maxResponses\": 1\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiEndpoint}}/surveys/:surveyId",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"surveys",
+						":surveyId"
+					],
+					"variable": [
+						{
+							"key": "surveyId",
+							"value": "d14ebfd4-2bc6-4726-9e84-7b9218c0a07d"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get response",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{apiEndpoint}}/responses/survey/:surveyId",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"responses",
+						"survey",
+						":surveyId"
+					],
+					"variable": [
+						{
+							"key": "surveyId",
+							"value": ""
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Set response",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"response\": \"thumbsUp\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{apiEndpoint}}/responses/:questionId",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"responses",
+						":questionId"
+					],
+					"variable": [
+						{
+							"key": "questionId",
+							"value": "72dfbad6-412b-4c1c-8dc8-8ada78cbe12d"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get survey responses",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "{{apiEndpoint}}/surveys/:surveyId/responses",
+					"host": [
+						"{{apiEndpoint}}"
+					],
+					"path": [
+						"surveys",
+						":surveyId",
+						"responses"
+					],
+					"variable": [
+						{
+							"key": "surveyId",
+							"value": "0aeea030-6e3c-4182-bb20-b1b34d59b759"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "apiEndpoint",
+			"value": "http://localhost:3000/api"
+		}
+	]
+}

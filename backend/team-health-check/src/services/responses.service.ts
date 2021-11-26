@@ -25,9 +25,9 @@ export const validateSetResponse = () => [
   ),
 ];
 
-const getAndCreateResponse = async (userId: string, survey: Survey) => {
+const getResponse = async (userId: string, survey: Survey) => {
   if (!survey.active) {
-    return null;
+    return 'This survey is no longer active.';
   }
 
   const responseRepo = getRepository(SurveyResponse);
@@ -54,9 +54,20 @@ const getAndCreateResponse = async (userId: string, survey: Survey) => {
   }
 
   if (survey.maxResponses && surveyResponses.length >= survey.maxResponses) {
-    return null;
+    return 'This survey is no longer accepting responses.';
   }
 
+  return null;
+};
+
+const getAndCreateResponse = async (userId: string, survey: Survey) => {
+  const r = await getResponse(userId, survey);
+
+  if (r) {
+    return r;
+  }
+
+  const responseRepo = getRepository(SurveyResponse);
   const questionRepo = getRepository(SurveyQuestion);
   const questionCount = await questionRepo.count({ survey });
 
@@ -100,11 +111,9 @@ export const setResponse: RequestHandler<
     targetQuestion.survey,
   );
 
-  if (surveyResponse === null) {
+  if (typeof surveyResponse === 'string') {
     return sendJson(res, 400, {
-      errors: [
-        'This survey is not accepting responses or is no longer active.',
-      ],
+      errors: [surveyResponse],
     });
   }
 
@@ -123,7 +132,7 @@ export const setResponse: RequestHandler<
 
   await surveyResponseRepo.update(surveyResponse.id, { answered: answerCount });
 
-  return res.status(200).send();
+  return res.status(204).send();
 };
 
 interface GetResponseParams {
@@ -164,18 +173,29 @@ export const getSurveyResponse: RequestHandler<GetResponseParams> = async (
   }
 
   const { id: userId } = req.jwtPayload;
-  const surveyResponse = await getAndCreateResponse(userId, survey);
+  const surveyResponse = await getResponse(userId, survey);
 
-  if (!surveyResponse) {
-    return sendJson(res, 400, { errors: ['This survey is no longer active.'] });
+  if (typeof surveyResponse === 'string') {
+    return sendJson(res, 400, { errors: [surveyResponse] });
   }
 
-  const questionResponseRepo = getRepository(QuestionResponse);
   const questionRepo = getRepository(SurveyQuestion);
   const questions = await questionRepo.find({
     where: { survey },
     order: { order: 'ASC' },
   });
+
+  if (surveyResponse === null) {
+    return sendJson<GetSurveyResponseResponse>(res, 200, {
+      responses: questions.map((q) => ({
+        id: q.id,
+        question: q.question,
+        response: null,
+      })),
+    });
+  }
+
+  const questionResponseRepo = getRepository(QuestionResponse);
   const responses = (
     await questionResponseRepo.find({
       where: { surveyResponse },
