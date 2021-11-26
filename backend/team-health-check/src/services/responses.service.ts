@@ -172,7 +172,10 @@ export const getSurveyResponse: RequestHandler<GetResponseParams> = async (
 
   const questionResponseRepo = getRepository(QuestionResponse);
   const questionRepo = getRepository(SurveyQuestion);
-  const questions = await questionRepo.find({ survey });
+  const questions = await questionRepo.find({
+    where: { survey },
+    order: { order: 'ASC' },
+  });
   const responses = (
     await questionResponseRepo.find({
       where: { surveyResponse },

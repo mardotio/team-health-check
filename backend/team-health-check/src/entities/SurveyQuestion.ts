@@ -19,6 +19,9 @@ export default class SurveyQuestion {
   @Column()
   question!: string;
 
+  @Column()
+  order!: number;
+
   @OneToMany(
     () => QuestionResponse,
     (questionResponse) => questionResponse.question,
