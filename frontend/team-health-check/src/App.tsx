@@ -3,17 +3,12 @@ import styled from 'styled-components';
 import { useAppDispatch, useAppSelector } from './hooks/redux';
 import selectLogin from './selectors/userSelectors';
 import { login } from './actions/userActions';
+import Sidebar from './components/Sidebar';
 
 const AppWrapper = styled.div`
   min-height: 100%;
   background-color: white;
-`;
-
-const AppHeader = styled.header`
-  padding: 12px;
-  font-size: 36px;
-  text-align: center;
-  border-bottom: 1px solid lightgray;
+  display: flex;
 `;
 
 const App = () => {
@@ -36,7 +31,7 @@ const App = () => {
 
   return (
     <AppWrapper>
-      <AppHeader>Team Health Check</AppHeader>
+      <Sidebar />
     </AppWrapper>
   );
 };
