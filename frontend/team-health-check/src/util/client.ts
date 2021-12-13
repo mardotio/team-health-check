@@ -78,7 +78,7 @@ export interface LoginResponse {
 }
 
 export const LoginService = {
-  login: () => ApiFetch.fetch<LoginResponse>('/login', 'GET'),
+  login: () => ApiFetch.fetch<LoginResponse>('/login', 'POST'),
 };
 
 export type ResponseValues = 'thumbsUp' | 'thumbsDown' | 'shrug';
