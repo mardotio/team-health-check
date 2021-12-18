@@ -78,7 +78,7 @@ export interface LoginResponse {
 }
 
 export const LoginService = {
-  login: () => ApiFetch.fetch<LoginResponse>('/login', 'GET'),
+  login: () => ApiFetch.fetch<LoginResponse>('/login', 'POST'),
 };
 
 export type ResponseValues = 'thumbsUp' | 'thumbsDown' | 'shrug';
@@ -178,10 +178,11 @@ export const SurveysService = {
     ),
   getSurvey: (surveyId: string) =>
     ApiFetch.fetch<GetSurveyResponse>(`/surveys/${surveyId}`, 'GET'),
-  updateSurvey: (surveyId: string) =>
+  updateSurvey: (surveyId: string, body: EditSurveyRequest) =>
     ApiFetch.fetch<undefined, EditSurveyRequest>(
       `/surveys/${surveyId}`,
       'PATCH',
+      body,
     ),
   getTeamSurveys: (teamId: string) =>
     ApiFetch.fetch<GetTeamSurveysResponse>(`/surveys/team/${teamId}`, 'GET'),
@@ -198,7 +199,16 @@ export interface GetTeamsResponse {
 
 export type CreateTeamResponse = Team;
 
+export interface CreateTeamRequest {
+  displayName: string;
+}
+
 export const TeamsService = {
   getTeams: () => ApiFetch.fetch<GetTeamsResponse>('/teams', 'GET'),
-  createTeam: () => ApiFetch.fetch<CreateTeamResponse>('/teams', 'POST'),
+  createTeam: (body: CreateTeamRequest) =>
+    ApiFetch.fetch<CreateTeamResponse, CreateTeamRequest>(
+      '/teams',
+      'POST',
+      body,
+    ),
 };
