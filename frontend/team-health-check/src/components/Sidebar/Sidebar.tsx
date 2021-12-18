@@ -2,8 +2,18 @@ import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Button } from '@mui/material';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
-import { selectGetTeams } from '../../selectors/teamsSelectors';
-import { fetchTeams } from '../../actions/teamsActions';
+import {
+  selectCreateTeamsForm,
+  selectGetTeams,
+} from '../../selectors/teamsSelectors';
+import {
+  createTeam,
+  fetchTeams,
+  patchCreateTeamForm,
+} from '../../actions/teamsActions';
+import selectModalId from '../../selectors/uiSelectors';
+import { closeModal, openModal } from '../../actions/uiActions';
+import CreateTeamModal, { CREATE_TEAM_MODAL_ID } from './CreateTeamModal';
 
 const Wrapper = styled.nav`
   border-right: 1px solid #ccd4d9;
@@ -21,12 +31,21 @@ const TeamsContainer = styled.div`
   padding: 12px;
 `;
 
+const SidebarButton = styled(Button)`
+  width: 100%;
+  text-transform: none !important;
+  justify-content: flex-start !important;
+  padding-left: 24px !important;
+`;
+
 const Sidebar = () => {
   const {
     data: teams,
     loading: teamsLoading,
     error: teamsError,
   } = useAppSelector(selectGetTeams);
+  const modalId = useAppSelector(selectModalId);
+  const createTeamForm = useAppSelector(selectCreateTeamsForm);
   const dispatch = useAppDispatch();
 
   useEffect(() => {
@@ -36,15 +55,40 @@ const Sidebar = () => {
   }, [teams, teamsLoading, teamsError, dispatch]);
 
   const teamsButtons = (teams || []).map((t) => (
-    <Button id={t.id} variant="outlined" size="small">
+    <SidebarButton key={t.id} variant="text" size="small">
       {t.displayName}
-    </Button>
+    </SidebarButton>
   ));
+
+  const onCancelCreate = () => {
+    dispatch(closeModal(CREATE_TEAM_MODAL_ID));
+    dispatch(patchCreateTeamForm({ teamName: '' }));
+  };
 
   return (
     <Wrapper>
       <Header>Team Health Check</Header>
-      <TeamsContainer>{teamsButtons}</TeamsContainer>
+      <TeamsContainer>
+        {teamsButtons}
+
+        <SidebarButton
+          variant="text"
+          size="small"
+          onClick={() => dispatch(openModal(CREATE_TEAM_MODAL_ID))}
+        >
+          Add team
+        </SidebarButton>
+      </TeamsContainer>
+      <CreateTeamModal
+        isOpen={modalId === CREATE_TEAM_MODAL_ID}
+        onTeamNameChange={(teamName) =>
+          dispatch(patchCreateTeamForm({ teamName }))
+        }
+        onSubmit={(teamName) => dispatch(createTeam(teamName))}
+        teamName={createTeamForm.teamName}
+        onCancel={onCancelCreate}
+        onClose={() => dispatch(closeModal(CREATE_TEAM_MODAL_ID))}
+      />
     </Wrapper>
   );
 };
