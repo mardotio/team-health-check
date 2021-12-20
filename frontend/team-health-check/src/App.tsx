@@ -5,7 +5,8 @@ import { useAppDispatch, useAppSelector } from './hooks/redux';
 import selectLogin from './selectors/userSelectors';
 import { login } from './actions/userActions';
 import Sidebar from './components/Sidebar';
-import Team from './pages/Team';
+import TeamSurveys from './pages/TeamSurveys';
+import ROUTES from './routes';
 
 const AppWrapper = styled.div`
   min-height: 100%;
@@ -40,8 +41,8 @@ const App = () => {
       <Sidebar />
       <AppContent>
         <Routes>
-          <Route path="/teams/:teamName" element={<Team />} />
-          <Route path="/" element={<Team />} />
+          <Route path={ROUTES.teamSurveys} element={<TeamSurveys />} />
+          <Route path={ROUTES.home} element={<TeamSurveys />} />
         </Routes>
       </AppContent>
     </AppWrapper>

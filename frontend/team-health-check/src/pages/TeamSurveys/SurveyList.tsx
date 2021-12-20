@@ -1,8 +1,10 @@
 import React from 'react';
 import styled from 'styled-components';
 import { Link, Typography } from '@mui/material';
+import { generatePath } from 'react-router-dom';
 import { SurveySummary, Team } from '../../util/client';
 import SurveyButton from '../../components/SurveyButton';
+import ROUTES from '../../routes';
 
 interface Props {
   surveys: { active: SurveySummary[]; inactive: SurveySummary[] } | null;
@@ -59,7 +61,11 @@ const SurveyList = ({ surveys, selectedTeam, onCreateSurvey }: Props) => {
       >
         {combinedSurveys.map((s) => (
           <SurveyButton
-            to={`/teams/${selectedTeam.displayName}/${s.id}`}
+            key={s.id}
+            to={generatePath(ROUTES.teamSurveyDetails, {
+              teamName: selectedTeam.displayName,
+              surveyId: s.id,
+            })}
             surveySummary={s}
           />
         ))}

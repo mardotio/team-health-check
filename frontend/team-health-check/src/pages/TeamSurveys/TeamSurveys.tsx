@@ -29,7 +29,7 @@ const Header = styled.div`
   align-items: center;
 `;
 
-const Team = () => {
+const TeamSurveys = () => {
   const { teamName } = useParams<'teamName'>();
   const dispatch = useAppDispatch();
   const selectedTeamId = useAppSelector(selectSelectedTeam);
@@ -125,4 +125,4 @@ const Team = () => {
   );
 };
 
-export default Team;
+export default TeamSurveys;
