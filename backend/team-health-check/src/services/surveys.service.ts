@@ -51,7 +51,7 @@ interface CreateSurveyResponse {
 
 export const validateCreateSurvey = () => [
   body('teamId').isUUID(4),
-  body('maxResponses').optional({ nullable: true }).isInt({ min: 1 }),
+  body('maxResponses').isInt({ min: 1 }).optional({ nullable: true }),
 ];
 
 export const createSurvey: RequestHandler<{}, {}, CreateSurveyRequest> = async (

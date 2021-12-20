@@ -1,14 +1,20 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
+import { Route, Routes } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from './hooks/redux';
 import selectLogin from './selectors/userSelectors';
 import { login } from './actions/userActions';
 import Sidebar from './components/Sidebar';
+import Team from './pages/Team';
 
 const AppWrapper = styled.div`
   min-height: 100%;
   background-color: white;
   display: flex;
+`;
+
+const AppContent = styled.div`
+  flex-grow: 1;
 `;
 
 const App = () => {
@@ -32,6 +38,12 @@ const App = () => {
   return (
     <AppWrapper>
       <Sidebar />
+      <AppContent>
+        <Routes>
+          <Route path="/teams/:teamName" element={<Team />} />
+          <Route path="/" element={<Team />} />
+        </Routes>
+      </AppContent>
     </AppWrapper>
   );
 };
