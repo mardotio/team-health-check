@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Button } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { generatePath, Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
   selectCreateTeamsForm,
@@ -15,6 +15,7 @@ import {
 import selectModalId from '../../selectors/uiSelectors';
 import { closeModal, openModal } from '../../actions/uiActions';
 import CreateTeamModal, { CREATE_TEAM_MODAL_ID } from './CreateTeamModal';
+import ROUTES from '../../routes';
 
 const Wrapper = styled.nav`
   border-right: 1px solid #ccd4d9;
@@ -61,7 +62,10 @@ const Sidebar = () => {
       key={t.id}
       variant="text"
       size="small"
-      {...{ component: Link, to: `/teams/${t.displayName}` }}
+      {...{
+        component: Link,
+        to: generatePath(ROUTES.teamSurveys, { teamName: t.displayName }),
+      }}
     >
       {t.displayName}
     </SidebarButton>

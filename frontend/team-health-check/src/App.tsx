@@ -6,6 +6,7 @@ import selectLogin from './selectors/userSelectors';
 import { login } from './actions/userActions';
 import Sidebar from './components/Sidebar';
 import Team from './pages/Team';
+import ROUTES from './routes';
 
 const AppWrapper = styled.div`
   min-height: 100%;
@@ -40,8 +41,8 @@ const App = () => {
       <Sidebar />
       <AppContent>
         <Routes>
-          <Route path="/teams/:teamName" element={<Team />} />
-          <Route path="/" element={<Team />} />
+          <Route path={ROUTES.teamSurveys} element={<Team />} />
+          <Route path={ROUTES.home} element={<Team />} />
         </Routes>
       </AppContent>
     </AppWrapper>
