@@ -115,9 +115,9 @@ const getColors = (variant: ButtonVariant): ButtonColors => {
     case 'tertiary':
       return {
         background: {
-          default: '#f2f5f7',
+          default: '#edf0f2',
           hover: '#f2f5f7',
-          focus: '#f2f5f7',
+          focus: '#edf0f2',
           disabled: '#f8f9fa',
         },
         border: {

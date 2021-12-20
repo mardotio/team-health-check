@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Button } from '@mui/material';
+import { Link } from 'react-router-dom';
 import { useAppDispatch, useAppSelector } from '../../hooks/redux';
 import {
   selectCreateTeamsForm,
@@ -32,6 +33,7 @@ const TeamsContainer = styled.div`
 `;
 
 const SidebarButton = styled(Button)`
+  display: block;
   width: 100%;
   text-transform: none !important;
   justify-content: flex-start !important;
@@ -55,7 +57,12 @@ const Sidebar = () => {
   }, [teams, teamsLoading, teamsError, dispatch]);
 
   const teamsButtons = (teams || []).map((t) => (
-    <SidebarButton key={t.id} variant="text" size="small">
+    <SidebarButton
+      key={t.id}
+      variant="text"
+      size="small"
+      {...{ component: Link, to: `/teams/${t.displayName}` }}
+    >
       {t.displayName}
     </SidebarButton>
   ));
