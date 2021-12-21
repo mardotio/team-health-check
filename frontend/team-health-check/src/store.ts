@@ -4,6 +4,7 @@ import teamsReducer from './reducers/teamsReducer';
 import userReducer from './reducers/userReducer';
 import uiReducer from './reducers/uiReducer';
 import surveysReducer from './reducers/surveysReducer';
+import responsesReducer from './reducers/responsesReducer';
 
 export const store = configureStore({
   reducer: {
@@ -11,6 +12,7 @@ export const store = configureStore({
     user: userReducer,
     ui: uiReducer,
     surveys: surveysReducer,
+    responses: responsesReducer,
   },
   middleware: (getDefaultMiddleware) => getDefaultMiddleware().concat(thunk),
   devTools: process.env.NODE_ENV !== 'production',

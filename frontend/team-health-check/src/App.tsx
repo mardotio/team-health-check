@@ -8,6 +8,7 @@ import Sidebar from './components/Sidebar';
 import TeamSurveys from './pages/TeamSurveys';
 import ROUTES from './routes';
 import SurveyDetails from './pages/SurveyDetails/SurveyDetails';
+import Survey from './pages/Survey/Survey';
 
 const AppWrapper = styled.div`
   min-height: 100%;
@@ -46,6 +47,7 @@ const App = () => {
         <Routes>
           <Route path={ROUTES.teamSurveyDetails} element={<SurveyDetails />} />
           <Route path={ROUTES.teamSurveys} element={<TeamSurveys />} />
+          <Route path={ROUTES.survey} element={<Survey />} />
           <Route path={ROUTES.home} element={<TeamSurveys />} />
         </Routes>
       </AppContent>
