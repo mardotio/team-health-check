@@ -46,7 +46,7 @@ const getResponse = async (userId: string, survey: Survey) => {
   if (survey.maxResponses && completedCount >= survey.maxResponses) {
     const surveyRepo = getRepository(Survey);
     await surveyRepo.update(survey.id, { active: false });
-    return null;
+    return 'This survey is no longer accepting responses.';
   }
 
   if (existingResponse) {
@@ -131,6 +131,8 @@ export const setResponse: RequestHandler<
   const answerCount = await responseRepo.count({ surveyResponse });
 
   await surveyResponseRepo.update(surveyResponse.id, { answered: answerCount });
+
+  await getResponse(userId, targetQuestion.survey);
 
   return res.status(204).send();
 };
