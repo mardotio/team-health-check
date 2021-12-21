@@ -1,5 +1,10 @@
 import updateDataState, { DataState } from '../util/updateDataState';
-import { CreateSurveyResponse, SurveySummary } from '../util/client';
+import {
+  CreateSurveyResponse,
+  GetSurveyResponse,
+  GetSurveyResponsesResponse,
+  SurveySummary,
+} from '../util/client';
 import { CreateSurveyForm, SurveysActions } from '../actions/surveysActions';
 import partitionBy from '../util/partitionBy';
 
@@ -11,6 +16,8 @@ interface SurveysState {
   create: DataState<CreateSurveyResponse>;
   selectedTeamId: string | null;
   createSurveyForm: CreateSurveyForm;
+  surveyDetails: DataState<GetSurveyResponse>;
+  surveyResponses: DataState<GetSurveyResponsesResponse>;
 }
 
 const defaultSurveysState: SurveysState = {
@@ -27,6 +34,20 @@ const defaultSurveysState: SurveysState = {
     teamId: null,
   },
   create: {
+    data: null,
+    loading: false,
+    error: null,
+    lastUpdate: null,
+    lastSuccess: null,
+  },
+  surveyDetails: {
+    data: null,
+    loading: false,
+    error: null,
+    lastUpdate: null,
+    lastSuccess: null,
+  },
+  surveyResponses: {
     data: null,
     loading: false,
     error: null,
@@ -106,6 +127,52 @@ const surveysReducer = (
       return {
         ...state,
         create: updateDataState.error(state.create, action.payload),
+      };
+    case 'GET_SURVEY_START':
+      return {
+        ...state,
+        surveyDetails: updateDataState.loading(state.surveyDetails),
+      };
+    case 'GET_SURVEY_END': {
+      return {
+        ...state,
+        surveyDetails: updateDataState.success(
+          state.surveyDetails,
+          action.payload,
+        ),
+      };
+    }
+    case 'GET_SURVEY_ERROR':
+      return {
+        ...state,
+        surveyDetails: updateDataState.error(
+          state.surveyDetails,
+          action.payload,
+          true,
+        ),
+      };
+    case 'GET_SURVEY_RESPONSES_START':
+      return {
+        ...state,
+        surveyResponses: updateDataState.loading(state.surveyResponses),
+      };
+    case 'GET_SURVEY_RESPONSES_END': {
+      return {
+        ...state,
+        surveyResponses: updateDataState.success(
+          state.surveyResponses,
+          action.payload,
+        ),
+      };
+    }
+    case 'GET_SURVEY_RESPONSES_ERROR':
+      return {
+        ...state,
+        surveyResponses: updateDataState.error(
+          state.surveyResponses,
+          action.payload,
+          true,
+        ),
       };
     default:
       return state;
