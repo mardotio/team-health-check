@@ -2,6 +2,8 @@ import actionCreator, { Actions } from '../util/actionCreator';
 import {
   CreateSurveyRequest,
   CreateSurveyResponse,
+  GetSurveyResponse,
+  GetSurveyResponsesResponse,
   GetTeamSurveysResponse,
   isErrorResponse,
   SurveysService,
@@ -17,6 +19,12 @@ const PATCH_CREATE_SURVEY_FORM = 'PATCH_CREATE_SURVEY_FORM';
 const CREATE_SURVEY_START = 'CREATE_SURVEY_START';
 const CREATE_SURVEY_END = 'CREATE_SURVEY_END';
 const CREATE_SURVEY_ERROR = 'CREATE_SURVEY_ERROR';
+const GET_SURVEY_START = 'GET_SURVEY_START';
+const GET_SURVEY_END = 'GET_SURVEY_END';
+const GET_SURVEY_ERROR = 'GET_SURVEY_ERROR';
+const GET_SURVEY_RESPONSES_START = 'GET_SURVEY_RESPONSES_START';
+const GET_SURVEY_RESPONSES_END = 'GET_SURVEY_RESPONSES_END';
+const GET_SURVEY_RESPONSES_ERROR = 'GET_SURVEY_RESPONSES_ERROR';
 
 export interface CreateSurveyForm {
   teamId: string | null;
@@ -38,6 +46,15 @@ const surveysActions = {
     actionCreator(CREATE_SURVEY_END, payload),
   createSurveyError: (payload: string) =>
     actionCreator(CREATE_SURVEY_ERROR, payload),
+  getSurveyStart: () => actionCreator(GET_SURVEY_START),
+  getSurveyEnd: (payload: GetSurveyResponse) =>
+    actionCreator(GET_SURVEY_END, payload),
+  getSurveyError: (payload: string) => actionCreator(GET_SURVEY_ERROR, payload),
+  getSurveyResponsesStart: () => actionCreator(GET_SURVEY_RESPONSES_START),
+  getSurveyResponsesEnd: (payload: GetSurveyResponsesResponse) =>
+    actionCreator(GET_SURVEY_RESPONSES_END, payload),
+  getSurveyResponsesError: (payload: string) =>
+    actionCreator(GET_SURVEY_RESPONSES_ERROR, payload),
 };
 
 export type SurveysActions = Actions<typeof surveysActions>;
@@ -52,7 +69,7 @@ export const getTeamSurveys =
     if (isErrorResponse(response)) {
       return dispatch(
         surveysActions.getSurveysError(
-          `Error while retrieving surveys for team ${teamId}`,
+          `Error while retrieving surveys for team '${teamId}'`,
         ),
       );
     }
@@ -77,6 +94,42 @@ export const createSurvey =
 
     dispatch(closeModal(CREATE_SURVEY_DIALOG_ID));
     return dispatch(surveysActions.createSurveyEnd(response));
+  };
+
+export const getTeamSurveyDetails =
+  (surveyId: string): AppThunk =>
+  async (dispatch) => {
+    dispatch(surveysActions.getSurveyStart());
+
+    const response = await SurveysService.getSurvey(surveyId);
+
+    if (isErrorResponse(response)) {
+      return dispatch(
+        surveysActions.getSurveyError(
+          `Error while retrieving survey '${surveyId}'`,
+        ),
+      );
+    }
+
+    return dispatch(surveysActions.getSurveyEnd(response));
+  };
+
+export const getTeamSurveyResponses =
+  (surveyId: string): AppThunk =>
+  async (dispatch) => {
+    dispatch(surveysActions.getSurveyResponsesStart());
+
+    const response = await SurveysService.getSurveyResponses(surveyId);
+
+    if (isErrorResponse(response)) {
+      return dispatch(
+        surveysActions.getSurveyResponsesError(
+          `Error while retrieving responses for survey '${surveyId}'`,
+        ),
+      );
+    }
+
+    return dispatch(surveysActions.getSurveyResponsesEnd(response));
   };
 
 export const { patchCreateSurveyForm } = surveysActions;
