@@ -6,7 +6,8 @@ import { GetSurveyResponse } from '../../util/client';
 
 interface Props {
   survey: GetSurveyResponse;
-  onSurveyLinkClick: () => void;
+  onSurveyLinkClick?: () => void;
+  showActions: boolean;
 }
 
 const Wrapper = styled.div`
@@ -26,15 +27,28 @@ const ActionsWrapper = styled.div`
 const MetadataContainer = styled.div`
   display: flex;
   justify-content: space-between;
-  margin-bottom: 12px;
+
+  &:not(:last-child) {
+    margin-bottom: 12px;
+  }
 `;
 
 const Metadata = styled.dl`
   margin: 0;
 `;
 
-const SurveyMetadata = ({ survey, onSurveyLinkClick }: Props) => {
+const SurveyMetadata = ({ survey, onSurveyLinkClick, showActions }: Props) => {
   const createdOn = toDate(survey.createdOn);
+
+  const Actions = showActions ? (
+    <>
+      <Divider />
+
+      <ActionsWrapper>
+        <Button onClick={onSurveyLinkClick}>Survey link</Button>
+      </ActionsWrapper>
+    </>
+  ) : null;
 
   return (
     <Wrapper>
@@ -67,11 +81,7 @@ const SurveyMetadata = ({ survey, onSurveyLinkClick }: Props) => {
         </Metadata>
       </MetadataContainer>
 
-      <Divider />
-
-      <ActionsWrapper>
-        <Button onClick={onSurveyLinkClick}>Survey link</Button>
-      </ActionsWrapper>
+      {Actions}
     </Wrapper>
   );
 };

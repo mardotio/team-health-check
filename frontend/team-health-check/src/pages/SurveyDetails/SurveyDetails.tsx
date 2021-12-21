@@ -13,7 +13,7 @@ import {
   getTeamSurveyResponses,
 } from '../../actions/surveysActions';
 import SurveyResponses from './SurveyResponses';
-import SurveyMetadata from './SurveyMetadata';
+import SurveyMetadata from '../../components/SurveyMetadata';
 import SurveyLinkModal, {
   SURVEY_LINK_MODAL_ID,
 } from '../../components/SurveyLinkModal';
@@ -92,6 +92,7 @@ const SurveyDetails = () => {
         <SurveyMetadata
           survey={survey}
           onSurveyLinkClick={() => dispatch(openModal(SURVEY_LINK_MODAL_ID))}
+          showActions={survey.active}
         />
         <SurveyResponses responses={responses.responses} />
         <SurveyLinkModal
