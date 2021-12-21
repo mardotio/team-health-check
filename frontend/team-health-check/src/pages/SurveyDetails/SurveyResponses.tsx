@@ -53,14 +53,14 @@ const SurveyResponses = ({ responses }: Props) => {
   return (
     <Wrapper>
       {responses.map((r, i) => (
-        <>
+        <React.Fragment key={r.id}>
           {i !== 0 && <QuestionDivider />}
           <ResponseCard
             question={r.question}
             breakdown={groupedResponses[r.id]}
             totalReplies={r.responses.length}
           />
-        </>
+        </React.Fragment>
       ))}
     </Wrapper>
   );
