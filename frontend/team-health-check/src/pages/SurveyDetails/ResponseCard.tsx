@@ -101,7 +101,7 @@ const ResponseCard = ({ question, breakdown, totalReplies }: Props) => (
       {RESPONSE_VALUES.map((v, i) => {
         const percent = totalReplies > 0 ? breakdown[v] / totalReplies : 0;
         return (
-          <>
+          <React.Fragment key={v}>
             <Background row={i + 2}>
               <svg width="100%">
                 <rect width={`${percent}%`} height="100%" rx="4" />
@@ -118,7 +118,7 @@ const ResponseCard = ({ question, breakdown, totalReplies }: Props) => (
             <Cell column={3} row={i + 2} alignment="right">
               <Typography variant="body1">{percent}%</Typography>
             </Cell>
-          </>
+          </React.Fragment>
         );
       })}
     </BreakdownTable>
