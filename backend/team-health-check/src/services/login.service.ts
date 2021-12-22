@@ -2,9 +2,13 @@ import { Request, Response } from 'express';
 import { v4 as uuidV4 } from 'uuid';
 import generateJwt, { LoginResponse } from '../util/jwt';
 import sendJson from '../util/sendJson';
+import APP_ENVIRONMENT from '../util/environment';
 
-const login = async (_: Request, res: Response) => {
-  const userId = uuidV4();
+const login = async (req: Request, res: Response) => {
+  const userId =
+    !req.jwtPayload || APP_ENVIRONMENT.NEW_USER_ID_PER_JWT
+      ? uuidV4()
+      : req.jwtPayload.id;
   const { token, payload } = generateJwt(userId);
 
   res.cookie('token', token, {

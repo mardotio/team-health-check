@@ -10,6 +10,7 @@ import surveysRouter from './routers/surveys.router';
 import withJwtAuth from './middleware/auth.middleware';
 import teamsRouter from './routers/teams.router';
 import responsesRouter from './routers/responses.router';
+import withOptionalJwtAuth from './middleware/optionalAuth.middleware';
 
 const PORT = parseInt(APP_ENVIRONMENT.SERVER_PORT, 10);
 
@@ -19,7 +20,7 @@ app.use(helmet());
 app.use(cors());
 app.use(express.json());
 app.use(cookieParser());
-app.use('/login', loginRouter);
+app.use('/login', withOptionalJwtAuth, loginRouter);
 app.use('/teams', withJwtAuth, teamsRouter);
 app.use('/surveys', withJwtAuth, surveysRouter);
 app.use('/responses', withJwtAuth, responsesRouter);
