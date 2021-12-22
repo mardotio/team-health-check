@@ -41,6 +41,7 @@ const Survey = () => {
     loading: surveyLoading,
     data: survey,
     error: surveyError,
+    id: lastSurveyId,
   } = useAppSelector(selectSurveysSurveyDetails);
   const {
     loading: responsesLoading,
@@ -50,10 +51,10 @@ const Survey = () => {
   const isSurveyActive = survey ? survey.active : false;
 
   useEffect(() => {
-    if (!surveyLoading && !survey && !surveyError && surveyId) {
+    if (surveyId && lastSurveyId !== surveyId) {
       dispatch(getTeamSurveyDetails(surveyId));
     }
-  }, [surveyLoading, survey, surveyError, surveyId]);
+  }, [surveyId, lastSurveyId, dispatch]);
 
   useEffect(() => {
     if (

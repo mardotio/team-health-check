@@ -67,7 +67,9 @@ const SurveyMetadata = ({ survey, onSurveyLinkClick, showActions }: Props) => {
             Max responses
           </Typography>
           <Typography variant="body1" component="dd">
-            {survey.maxResponses}
+            {survey.maxResponses
+              ? survey.maxResponses
+              : String.fromCodePoint(0x221e)}
           </Typography>
         </Metadata>
 

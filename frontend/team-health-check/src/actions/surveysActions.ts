@@ -46,7 +46,7 @@ const surveysActions = {
     actionCreator(CREATE_SURVEY_END, payload),
   createSurveyError: (payload: string) =>
     actionCreator(CREATE_SURVEY_ERROR, payload),
-  getSurveyStart: () => actionCreator(GET_SURVEY_START),
+  getSurveyStart: (payload: string) => actionCreator(GET_SURVEY_START, payload),
   getSurveyEnd: (payload: GetSurveyResponse) =>
     actionCreator(GET_SURVEY_END, payload),
   getSurveyError: (payload: string) => actionCreator(GET_SURVEY_ERROR, payload),
@@ -99,7 +99,7 @@ export const createSurvey =
 export const getTeamSurveyDetails =
   (surveyId: string): AppThunk =>
   async (dispatch) => {
-    dispatch(surveysActions.getSurveyStart());
+    dispatch(surveysActions.getSurveyStart(surveyId));
 
     const response = await SurveysService.getSurvey(surveyId);
 
