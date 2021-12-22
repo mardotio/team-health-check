@@ -1,4 +1,9 @@
-import updateDataState, { DataState } from '../util/updateDataState';
+import updateDataState, {
+  DataState,
+  DataStateWithId,
+  getDefaultDataState,
+  getDefaultDataStateWithId,
+} from '../util/updateDataState';
 import {
   CreateSurveyResponse,
   GetSurveyResponse,
@@ -16,43 +21,19 @@ interface SurveysState {
   create: DataState<CreateSurveyResponse>;
   selectedTeamId: string | null;
   createSurveyForm: CreateSurveyForm;
-  surveyDetails: DataState<GetSurveyResponse>;
+  surveyDetails: DataStateWithId<GetSurveyResponse>;
   surveyResponses: DataState<GetSurveyResponsesResponse>;
 }
 
 const defaultSurveysState: SurveysState = {
-  get: {
-    data: null,
-    loading: false,
-    error: null,
-    lastUpdate: null,
-    lastSuccess: null,
-  },
+  get: getDefaultDataState(),
+  create: getDefaultDataState(),
+  surveyDetails: getDefaultDataStateWithId(),
+  surveyResponses: getDefaultDataState(),
   selectedTeamId: null,
   createSurveyForm: {
     maxResponses: '',
     teamId: null,
-  },
-  create: {
-    data: null,
-    loading: false,
-    error: null,
-    lastUpdate: null,
-    lastSuccess: null,
-  },
-  surveyDetails: {
-    data: null,
-    loading: false,
-    error: null,
-    lastUpdate: null,
-    lastSuccess: null,
-  },
-  surveyResponses: {
-    data: null,
-    loading: false,
-    error: null,
-    lastUpdate: null,
-    lastSuccess: null,
   },
 };
 
@@ -131,7 +112,10 @@ const surveysReducer = (
     case 'GET_SURVEY_START':
       return {
         ...state,
-        surveyDetails: updateDataState.loading(state.surveyDetails),
+        surveyDetails: updateDataState.loading(
+          state.surveyDetails,
+          action.payload,
+        ),
       };
     case 'GET_SURVEY_END': {
       return {

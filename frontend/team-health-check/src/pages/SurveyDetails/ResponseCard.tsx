@@ -100,7 +100,9 @@ const ResponseCard = ({ question, breakdown, totalReplies }: Props) => (
 
       {RESPONSE_VALUES.map((v, i) => {
         const percent =
-          (totalReplies > 0 ? breakdown[v] / totalReplies : 0) * 100;
+          totalReplies > 0
+            ? Math.round((breakdown[v] / totalReplies) * 1000) / 10
+            : 0;
         return (
           <React.Fragment key={v}>
             <Background row={i + 2}>

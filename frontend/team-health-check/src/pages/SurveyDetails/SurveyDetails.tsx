@@ -50,9 +50,9 @@ const SurveyDetails = () => {
   const modalId = useAppSelector(selectModalId);
   const { data: teams } = useAppSelector(selectGetTeams);
   const {
-    loading: surveyLoading,
-    error: surveyError,
     data: survey,
+    id: lastSurveyId,
+    loading: surveyLoading,
   } = useAppSelector(selectSurveysSurveyDetails);
   const {
     loading: responsesLoading,
@@ -61,10 +61,10 @@ const SurveyDetails = () => {
   } = useAppSelector(selectSurveyResponses);
 
   useEffect(() => {
-    if (!survey && !surveyError && !surveyLoading && surveyId) {
+    if (surveyId && lastSurveyId !== surveyId) {
       dispatch(getTeamSurveyDetails(surveyId));
     }
-  }, [survey, surveyError, surveyLoading, surveyId, dispatch]);
+  }, [lastSurveyId, surveyId, dispatch]);
 
   useEffect(() => {
     if (!responsesLoading && !responsesError && !responses && surveyId) {
@@ -78,7 +78,7 @@ const SurveyDetails = () => {
     return <div>Could not find team {teamName}</div>;
   }
 
-  if (!responses || !survey) {
+  if (!responses || !survey || surveyLoading) {
     return <div>Loading...</div>;
   }
 
